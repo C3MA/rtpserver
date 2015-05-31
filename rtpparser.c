@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stddef.h>
 
 #define MAXLINES    64
 
@@ -14,13 +15,14 @@ typedef struct {
 
 LineHeaderInfo mLines[MAXLINES];
 int            mActualLineCnt=0;
+uint32_t       mLastTimestamp=0;
 
 
 
-int decode_packet(char* pPacket, int packet_length, char* pOutputBuffer, int width, int height)
+int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int width, int height)
 {
-    unsigned int r_version, r_p, r_x, r_cc, r_m, r_pt,
-    r_seq, r_ts;
+    unsigned int r_version, r_p, r_x, r_cc, r_m, r_pt, r_seq;
+    uint32_t r_ts;
     /* Tear apart the header in a byte- and bit field-order
     independent fashion. */
     r_version = (pPacket[0] >> 6) & 3;
@@ -29,8 +31,15 @@ int decode_packet(char* pPacket, int packet_length, char* pOutputBuffer, int wid
     r_cc = pPacket[0] & 0xF;
     r_m = !!(pPacket[1] & 0x80);
     r_pt = pPacket[1] & 0x7F;
-    r_seq = ntohs(*((short *) (pPacket + 2)));
+    r_seq = (pPacket[2] << 8) | (pPacket[3] & 0xFF);
     r_ts = ntohl(*((long *) (pPacket + 4)));
+
+    if (r_ts < mLastTimestamp) {
+        // ignore frames older than the last seen one
+        return 1;
+    }
+
+    mLastTimestamp = r_ts;
 
     if (
            r_version == 2 && /* Version ID correct */
@@ -51,11 +60,37 @@ int decode_packet(char* pPacket, int packet_length, char* pOutputBuffer, int wid
 
        /* payload header rfc4175 */
        uint32_t seq =
-               ((uint32_t) ntohs(*((short *) (payload)))) << 16 |
-               ((uint32_t) r_seq);
+               ((uint32_t) ntohs( (payload[0] << 8) | (payload[1] & 0xFF) ) << 16 |
+               ((uint32_t) r_seq));
 
        printf("%u\n", r_seq);
 
+
+       mActualLineCnt = 0;
+
+       int offset;
+
+       for( offset = 2; offset < paylen /* break when we found the end */; offset += 6)
+       {
+           mLines[mActualLineCnt].length = ((payload[offset] << 8) | (payload[offset+1] & 0xFF) );
+           mLines[mActualLineCnt].linenumber = (((payload[offset+2] << 8) & 0xEF) | (payload[offset+3] & 0xFF) );
+           mLines[mActualLineCnt].offset = (((payload[offset+4] << 8) & 0xEF) | (payload[offset+5] & 0xFF) );
+
+           /* Check if there is an end */
+           if ((payload[offset+4] << 8) & 0x80)
+           {
+               break;
+           }
+
+           mActualLineCnt++;
+       }
+
+       offset +=6;
+       int linecnt;
+       for (linecnt = 0; (linecnt < mActualLineCnt) && (offset < paylen); linecnt++)
+       {
+
+       }
 
     }
 

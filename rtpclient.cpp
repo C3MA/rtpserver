@@ -34,6 +34,6 @@ void RtpClient::readyRead(void)
     qDebug() << "Message from: " << sender.toString();
     qDebug() << "Message port: " << senderPort;
 
-    decode_packet(pkt, len, NULL, 0, 0);
+    decode_packet((uint8_t*) pkt, len, NULL, 0, 0);
 
 }

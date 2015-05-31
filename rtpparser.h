@@ -1,6 +1,8 @@
 #ifndef RTPPARSER_H
 #define RTPPARSER_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,7 +17,7 @@ extern "C" {
  * @param height
  * @return ONE on Errors, zero on success
  */
-int decode_packet(char* pPacket, int packet_length, char* pOutputBuffer, int width, int height);
+int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int width, int height);
 
 #ifdef __cplusplus
 }
