@@ -1,8 +1,9 @@
 #include "rtpparser.h"
 
-#include <stdint.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <arpa/inet.h>
+#include <string.h>
 
 #define MAXLINES    64
 
@@ -19,9 +20,9 @@ uint32_t       mLastTimestamp=0;
 
 
 
-int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int width, int height)
+int decode_packet(uint8_t* pPacket, int packet_length, uint8_t* pOutputBuffer, int width, int height)
 {
-    unsigned int r_version, r_p, r_x, r_cc, r_m, r_pt, r_seq;
+    unsigned int r_version, r_p, r_x, r_cc, r_pt, r_seq;
     uint32_t r_ts;
     /* Tear apart the header in a byte- and bit field-order
     independent fashion. */
@@ -29,7 +30,7 @@ int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int 
     r_p = !!(pPacket[0] & 0x20);
     r_x = !!(pPacket[0] & 0x10);
     r_cc = pPacket[0] & 0xF;
-    r_m = !!(pPacket[1] & 0x80);
+
     r_pt = pPacket[1] & 0x7F;
     r_seq = (pPacket[2] << 8) | (pPacket[3] & 0xFF);
     r_ts = ntohl(*((long *) (pPacket + 4)));
@@ -49,7 +50,7 @@ int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int 
            (!r_p || (pPacket[packet_length - 1] < (packet_length - (12 + 4 * r_cc))))
            )
     {
-       char *payload;
+       uint8_t* payload;
        int lex, paylen;
 
        /* Length of fixed header extension, if any */
@@ -63,7 +64,7 @@ int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int 
                ((uint32_t) ntohs( (payload[0] << 8) | (payload[1] & 0xFF) ) << 16 |
                ((uint32_t) r_seq));
 
-       printf("%u\n", r_seq);
+       printf("%u\n", seq);
 
 
        mActualLineCnt = 0;
@@ -77,7 +78,7 @@ int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int 
            mLines[mActualLineCnt].offset = (((payload[offset+4] << 8) & 0xEF) | (payload[offset+5] & 0xFF) );
 
            /* Check if there is an end */
-           if ((payload[offset+4] << 8) & 0x80)
+           if (!(payload[offset+4] & 0x80))
            {
                break;
            }
@@ -86,13 +87,38 @@ int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int 
        }
 
        offset +=6;
-       int linecnt;
-       for (linecnt = 0; (linecnt < mActualLineCnt) && (offset < paylen); linecnt++)
+       int fbOffset;
+       int lineCnt;
+       int fbLen;
+       for (lineCnt = 0; (lineCnt < mActualLineCnt) && (offset < paylen); lineCnt++)
        {
+           if (mLines[lineCnt].linenumber > height) {
+               offset += mLines[lineCnt].length;
+               continue;
+           }
 
+           fbOffset = mLines[lineCnt].linenumber * width * 3 + 3 * mLines[lineCnt].offset;
+
+           fbLen = mLines[lineCnt].length;
+
+           if ( width * 3  < 3 * mLines[lineCnt].offset + mLines[lineCnt].length) {
+                fbLen = width *3 - 3 * mLines[lineCnt].offset;
+           }
+
+           if ( width * height * 3 < fbOffset + fbLen) {
+               fbLen = width * height * 3 - fbOffset;
+           }
+
+           if (fbLen < 3) {
+               offset += mLines[lineCnt].length;
+               continue;
+           }
+
+           memmove(pOutputBuffer + fbOffset, payload +offset, fbLen);
+           offset += mLines[lineCnt].length;
        }
 
     }
 
-
+    return 0;
 }

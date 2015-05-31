@@ -1,6 +1,5 @@
 #include "rtpclient.h"
 #include "rtp.h"
-#include <arpa/inet.h>
 #include "rtpparser.h"
 
 RtpClient::RtpClient(QObject *parent) :
@@ -26,7 +25,7 @@ void RtpClient::readyRead(void)
     // The sender's host address and port is stored in *address and *port
     // (unless the pointers are 0).
     quint64 len = socket->readDatagram(buffer.data(), buffer.size(), &sender, &senderPort);
-    rtp_hdr_t *header = (rtp_hdr_t*) (buffer.constData());
+
     char* pkt = buffer.data();
 
 
@@ -34,6 +33,7 @@ void RtpClient::readyRead(void)
     qDebug() << "Message from: " << sender.toString();
     qDebug() << "Message port: " << senderPort;
 
-    decode_packet((uint8_t*) pkt, len, NULL, 0, 0);
+    u_int8_t fb[12 * 10 *3];
+    decode_packet((uint8_t*) pkt, len, fb, 12, 10);
 
 }

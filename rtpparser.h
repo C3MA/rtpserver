@@ -17,7 +17,7 @@ extern "C" {
  * @param height
  * @return ONE on Errors, zero on success
  */
-int decode_packet(uint8_t* pPacket, int packet_length, char* pOutputBuffer, int width, int height);
+int decode_packet(uint8_t* pPacket, int packet_length, uint8_t* pOutputBuffer, int width, int height);
 
 #ifdef __cplusplus
 }
