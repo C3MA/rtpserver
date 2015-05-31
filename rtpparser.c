@@ -54,7 +54,7 @@ int decode_packet(char* pPacket, int packet_length, char* pOutputBuffer, int wid
                ((uint32_t) ntohs(*((short *) (payload)))) << 16 |
                ((uint32_t) r_seq);
 
-       printf("%du\n", seq);
+       printf("%u\n", r_seq);
 
 
     }
