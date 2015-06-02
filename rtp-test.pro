@@ -7,7 +7,7 @@
 QT       += core
 QT       += network
 
-QT       -= gui
+QT += qml quick
 
 TARGET = rtp-test
 CONFIG   += console
@@ -24,3 +24,6 @@ HEADERS += \
     rtpclient.h \
     rtp.h \
     rtpparser.h
+
+OTHER_FILES += \
+    emulator.qml
