@@ -1,4 +1,4 @@
-import QtQuick 1.0
+import QtQuick 2.0
 
 Rectangle {
     width: 320
@@ -6,7 +6,8 @@ Rectangle {
     Grid {
         id: grid1
         anchors.fill: parent
-        columns: 12
+        columns: 3
+        spacing: 2
 
         Rectangle {
             id: rgb1

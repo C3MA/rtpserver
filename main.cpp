@@ -1,11 +1,10 @@
-#include <QCoreApplication>
-#include "rtpclient.h"
-
+#include <QGuiApplication>
 #include <QQuickView>
+#include "rtpclient.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    QGuiApplication a(argc, argv);
 
     RtpClient client;
 
