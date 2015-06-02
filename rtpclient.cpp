@@ -2,11 +2,17 @@
 #include "rtp.h"
 #include "rtpparser.h"
 
-RtpClient::RtpClient(QObject *parent) :
+RtpClient::RtpClient(QObject *parent, int width, int height) :
     QObject(parent)
 {
     // create a QUDP socket
     socket = new QUdpSocket(this);
+
+    // Store the module attributes
+    mWidth = width;
+    mHeight = height;
+
+    qDebug() << "Using Screen of  " << mWidth << "x" << mHeight << " pixel";
 
     socket->bind(QHostAddress::LocalHost, 5000);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
@@ -33,7 +39,7 @@ void RtpClient::readyRead(void)
     qDebug() << "Message from: " << sender.toString();
     qDebug() << "Message port: " << senderPort;
 
-    u_int8_t fb[12 * 10 *3];
-    decode_packet((uint8_t*) pkt, len, fb, 12, 10);
+    u_int8_t fb[mWidth * mHeight * 3];
+    decode_packet((uint8_t*) pkt, len, fb, mWidth, mHeight);
 
 }

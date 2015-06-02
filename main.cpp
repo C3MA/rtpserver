@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     QGuiApplication a(argc, argv);
 
-    RtpClient client;
+    RtpClient client(NULL, 12, 10);
 
     QQuickView view;
     view.setSource( QStringLiteral( "emulator.qml" ) );
