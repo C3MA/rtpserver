@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/layout">
+        <file alias="emulator.qml">emulator.qml</file>
+    </qresource>
+</RCC>

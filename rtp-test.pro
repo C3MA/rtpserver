@@ -27,3 +27,6 @@ HEADERS += \
 
 OTHER_FILES += \
     emulator.qml
+
+RESOURCES += \
+    gui.qrc
