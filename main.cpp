@@ -2,6 +2,7 @@
 #include <QQuickView>
 #include <QQuickItem>
 #include <QColor>
+#include <QMetaObject>
 
 #include "rtpclient.h"
 
@@ -19,6 +20,12 @@ int main(int argc, char *argv[])
         rgb1->setProperty("color", QColor("#00FF00"));
         qDebug() << "Set the color from th Appl.";
     }
+
+    QVariant returnedValue;
+    QMetaObject::invokeMethod(view.rootObject(), "setGUIWidthAndHeight",
+            Q_RETURN_ARG(QVariant, returnedValue),
+            Q_ARG(QVariant, 12), Q_ARG(QVariant, 10));
+
 
     return a.exec();
 }
