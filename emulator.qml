@@ -17,6 +17,7 @@ Rectangle {
             target: frameUpdater
             onFrameUpdated: console.log("Frame has changed!")
         }
+
     }
 
 
