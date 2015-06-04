@@ -1,5 +1,19 @@
+/* @file rtpclient.h
+ * @brief Example to controll the RTPServer
+ * @author Ollo
+ *
+ * @see RTPServer
+ *
+ * @defgroup RTPServerGui
+ */
+
 #ifndef RTPCLIENT_H
 #define RTPCLIENT_H
+
+
+/** @addtogroup RTPServerGui */
+/*@{*/
+
 
 #include <QObject>
 #include <QUdpSocket>
@@ -25,5 +39,7 @@ private:
     u_int8_t* mFramebuffer;
 
 };
+
+/*@}*/
 
 #endif // RTPCLIENT_H
