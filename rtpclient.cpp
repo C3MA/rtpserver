@@ -12,10 +12,17 @@ RtpClient::RtpClient(QObject *parent, int width, int height) :
     mWidth = width;
     mHeight = height;
 
+    mFramebuffer = (u_int8_t *) malloc(RGB_SIZE * mWidth * mHeight);
+
     qDebug() << "Using Screen of  " << mWidth << "x" << mHeight << " pixel";
 
     socket->bind(QHostAddress::LocalHost, 5000);
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+}
+
+RtpClient::~RtpClient()
+{
+    free(mFramebuffer);
 }
 
 void RtpClient::readyRead(void)
@@ -39,7 +46,6 @@ void RtpClient::readyRead(void)
     qDebug() << "Message from: " << sender.toString();
     qDebug() << "Message port: " << senderPort;
 
-    u_int8_t fb[mWidth * mHeight * 3];
-    decode_packet((uint8_t*) pkt, len, fb, mWidth, mHeight);
-
+    decode_packet((uint8_t*) pkt, len, mFramebuffer, mWidth, mHeight);
+    emit frameUpdated(mFramebuffer);
 }

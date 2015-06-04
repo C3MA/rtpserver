@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define RGB_SIZE    3   /**< We need three bytes, one for red, one for green and one for blue */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

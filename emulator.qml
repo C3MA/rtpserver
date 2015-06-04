@@ -3,13 +3,20 @@ import QtQuick 2.0
 Rectangle {
     width: 800
     height: 600
+    color: 'black'
     Grid {
         id: grid1
+
         anchors.fill: parent
         columns: 3
         rows: 4
         rowSpacing: 2
         columnSpacing: 2
+
+        Connections {
+            target: frameUpdater
+            onFrameUpdated: console.log("Frame has changed!")
+        }
     }
 
 
@@ -25,7 +32,7 @@ Rectangle {
 
         for (var i=0; i<length; i++) {
             var snippetName = "dynamicSnippet" + i
-            Qt.createQmlObject('import QtQuick 2.0; Rectangle {color: "red"; width: ' + boxWidth +'; height: ' + boxHeight + ' }',
+            Qt.createQmlObject('import QtQuick 2.0; Rectangle {color: "grey"; width: ' + boxWidth +'; height: ' + boxHeight + ' }',
                 grid1,  snippetName);
         }
         return "some return value"
