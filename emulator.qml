@@ -7,16 +7,26 @@ Rectangle {
         id: grid1
         anchors.fill: parent
         columns: 3
+        rows: 4
+        rowSpacing: 2
+        columnSpacing: 2
     }
+
 
     function setGUIWidthAndHeight(width, height) {
 
         var length=width*height;
-        console.log("Got message:", width, " x ", height , " sum: " , length)
-        for (var i=0; i<length; i++) {
+        var boxHeight = (grid1.height / height) - grid1.rowSpacing
+        var boxWidth = (grid1.width / width) - grid1.columnSpacing
+        console.log("Got message:", width, " x ", height , " sum: " , length, "\t" , " box: " , boxHeight , "x", boxWidth)
 
-            var newObject = Qt.createQmlObject('import QtQuick 2.0; Rectangle {color: "red"; width: 60; height: 60 }',
-                grid1, "dynamicSnippet" );
+        grid1.columns = width
+        grid1.rows = height
+
+        for (var i=0; i<length; i++) {
+            var snippetName = "dynamicSnippet" + i
+            Qt.createQmlObject('import QtQuick 2.0; Rectangle {color: "red"; width: ' + boxWidth +'; height: ' + boxHeight + ' }',
+                grid1,  snippetName);
         }
         return "some return value"
     }
