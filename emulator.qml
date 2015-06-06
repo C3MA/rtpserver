@@ -14,7 +14,6 @@ Rectangle {
         columnSpacing: 2
     }
 
-
     function setGUIWidthAndHeight(width, height) {
 
         var length=width*height;
@@ -27,9 +26,21 @@ Rectangle {
 
         for (var i=0; i<length; i++) {
             var snippetName = "dynamicSnippet" + i
-            Qt.createQmlObject('import QtQuick 2.0; Rectangle {color: "grey"; width: ' + boxWidth +'; height: ' + boxHeight + ' }',
+            Qt.createQmlObject('import QtQuick 2.0; Rectangle {color: "grey"; width: ' + boxWidth +'; height: ' + boxHeight + '; id: index' + i + ' }',
                 grid1,  snippetName);
         }
+        //grid1.childAt(1,1).color = '#ff0000'
         return "some return value"
+    }
+
+    function updateFrameContent(frameData, width, height) {
+        console.log("Frame dimensions : ", width, " x ", height, " Length: " + frameData.length );
+        for (var i=0; i<frameData.length; i++) {
+            var x=Math.floor(i/width) + 1
+            var y=i%width + 1
+            console.log(x, "x", y, " :", frameData[i])
+            grid1.childAt(x,y).color = frameData[i]
+        }
+
     }
 }
