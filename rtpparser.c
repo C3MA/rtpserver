@@ -7,6 +7,8 @@
 
 #define MAXLINES    64
 
+#define LINEHEADER_SIZE 6
+
 typedef struct {
     uint16_t length;
     uint16_t linenumber; /**< Y */
@@ -71,7 +73,7 @@ int decode_packet(uint8_t* pPacket, int packet_length, uint8_t* pOutputBuffer, i
 
        int offset;
 
-       for( offset = 2; offset < paylen /* break when we found the end */; offset += 6)
+       for( offset = 2; offset < paylen /* break when we found the end */; offset += LINEHEADER_SIZE)
        {
            mLines[mActualLineCnt].length = ((payload[offset] << 8) | (payload[offset+1] & 0xFF) );
            mLines[mActualLineCnt].linenumber = (((payload[offset+2] << 8) & 0xEF) | (payload[offset+3] & 0xFF) );
@@ -86,7 +88,8 @@ int decode_packet(uint8_t* pPacket, int packet_length, uint8_t* pOutputBuffer, i
            mActualLineCnt++;
        }
 
-       offset +=6;
+       /* Fill the output buffer line by line */
+       offset += LINEHEADER_SIZE;
        int fbOffset;
        int lineCnt;
        int fbLen;
@@ -101,15 +104,15 @@ int decode_packet(uint8_t* pPacket, int packet_length, uint8_t* pOutputBuffer, i
 
            fbLen = mLines[lineCnt].length;
 
-           if ( width * 3  < 3 * mLines[lineCnt].offset + mLines[lineCnt].length) {
-                fbLen = width *3 - 3 * mLines[lineCnt].offset;
+           if ( width * RGB_SIZE  < RGB_SIZE * mLines[lineCnt].offset + mLines[lineCnt].length) {
+                fbLen = width * RGB_SIZE - RGB_SIZE * mLines[lineCnt].offset;
            }
 
-           if ( width * height * 3 < fbOffset + fbLen) {
-               fbLen = width * height * 3 - fbOffset;
+           if ( width * height * RGB_SIZE < fbOffset + fbLen) {
+               fbLen = width * height * RGB_SIZE - fbOffset;
            }
 
-           if (fbLen < 3) {
+           if (fbLen < RGB_SIZE) {
                offset += mLines[lineCnt].length;
                continue;
            }
