@@ -18,12 +18,14 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     rtpparser.c \
-    rtpclient.cpp
+    rtpclient.cpp \
+    rgb2qcolorconverter.cpp
 
 HEADERS += \
     rtpclient.h \
     rtp.h \
-    rtpparser.h
+    rtpparser.h \
+    rgb2qcolorconverter.h
 
 OTHER_FILES += \
     emulator.qml

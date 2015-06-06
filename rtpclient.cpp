@@ -47,5 +47,5 @@ void RtpClient::readyRead(void)
     qDebug() << "Message port: " << senderPort;
 
     decode_packet((uint8_t*) pkt, len, mFramebuffer, mWidth, mHeight);
-    emit frameUpdated(mFramebuffer);
+    emit frameUpdated(mFramebuffer, mWidth, mHeight);
 }

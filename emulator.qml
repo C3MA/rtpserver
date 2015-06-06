@@ -12,12 +12,6 @@ Rectangle {
         rows: 4
         rowSpacing: 2
         columnSpacing: 2
-
-        Connections {
-            target: frameUpdater
-            onFrameUpdated: console.log("Frame has changed!")
-        }
-
     }
 
 

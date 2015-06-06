@@ -21,16 +21,15 @@
 class RtpClient : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(NOTIFY frameUpdated)
 public:
     explicit RtpClient(QObject *parent = 0, int width = 0, int height = 0);
     ~RtpClient();
 
 signals:
-    void frameUpdated(u_int8_t* data);
+     void frameUpdated(u_int8_t* frame, int width, int height);
 
 public slots:
-    void readyRead(void);
+     void readyRead(void);
 
 private:
     QUdpSocket *socket;
